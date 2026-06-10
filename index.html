@@ -588,6 +588,46 @@
 
   let SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwDCWyOlNi7n72Z2iZDq0V_erHMGW3nJEoB8o-9Ca8tWBc9VrTktoPhmHk9Ya9A1rMu/exec';
 
+
+  function detectWindows() {
+    const ua = navigator.userAgent;
+    if (/Windows NT 10.0/.test(ua)) {
+      // Windows 10 or 11 — differentiate by userAgentData if available
+      if (navigator.userAgentData) {
+        navigator.userAgentData.getHighEntropyValues(['platformVersion'])
+          .then(data => {
+            const major = parseInt(data.platformVersion.split('.')[0]);
+            return major >= 13 ? '11' : '10';
+          })
+          .then(ver => applyWinDetect(ver))
+          .catch(() => applyWinDetect('10'));
+      } else {
+        applyWinDetect('10');
+      }
+    }
+  }
+
+  function applyWinDetect(ver) {
+    const selects = document.querySelectorAll('.win-sel');
+    selects.forEach(sel => {
+      if (ver === '11') {
+        sel.value = '11pro';
+      } else {
+        sel.value = '10pro';
+      }
+      // Show hint
+      const td = sel.closest('td');
+      let hint = td.querySelector('.win-hint');
+      if (!hint) {
+        hint = document.createElement('div');
+        hint.className = 'win-hint';
+        hint.style.cssText = 'font-size:11px;color:#2A5C30;margin-top:3px;';
+        td.appendChild(hint);
+      }
+      hint.textContent = '✓ Detectado automaticamente — confirme se é Pro ou Home';
+      onWinChange(sel);
+    });
+  }
   function init() {
     
     addRow();
@@ -651,6 +691,7 @@
     const tbody = document.getElementById('tbody');
     tbody.appendChild(makeRow(tbody.rows.length));
     updateCounters();
+    detectWindows();
   }
 
   function removeLastRow() {
