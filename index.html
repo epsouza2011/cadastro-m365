@@ -621,10 +621,10 @@
       if (!hint) {
         hint = document.createElement('div');
         hint.className = 'win-hint';
-        hint.style.cssText = 'font-size:11px;color:#2A5C30;margin-top:3px;';
+        hint.style.cssText = 'font-size:10px;color:#2A5C30;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
         td.appendChild(hint);
       }
-      hint.textContent = '✓ Detectado: confirme Pro ou Home';
+      hint.textContent = '✓ Detectado: Pro ou Home?';
       onWinChange(sel);
     });
   }
