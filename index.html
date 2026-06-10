@@ -438,6 +438,24 @@
   }
   .footer a { color: #2A5C30; text-decoration: none; }
 
+  .btn-ver-versao {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: transparent;
+    border: 0.5px solid #2A5C30;
+    color: #2A5C30;
+    border-radius: 5px;
+    padding: 3px 8px;
+    font-size: 11px;
+    cursor: pointer;
+    margin-top: 4px;
+    white-space: nowrap;
+    font-family: inherit;
+    transition: background 0.15s;
+  }
+  .btn-ver-versao:hover { background: #EEF5EF; }
+
   @media (max-width: 580px) {
     .win-grid { grid-template-columns: 1fr; }
     .header h1 { font-size: 13px; }
@@ -628,6 +646,18 @@
       onWinChange(sel);
     });
   }
+
+  function verVersaoWindows() {
+    try {
+      window.location.href = 'ms-settings:about';
+      setTimeout(() => {
+        alert('Na tela que abriu, procure por "Especificações do Windows" e veja se está escrito Pro ou Home. Depois volte aqui e selecione a opção correta!');
+      }, 500);
+    } catch(e) {
+      alert('Abra as Configurações do Windows → Sistema → Sobre. Lá você verá se é Pro ou Home.');
+    }
+  }
+
   function init() {
     
     addRow();
@@ -664,7 +694,7 @@
       <td><input type="text" placeholder="ex: joao.silva" class="input-email" oninput="updateCounters(); this.dataset.edited='true'"></td>
       <td><select onchange="updateCounters()">${setorSel}</select></td>
       <td><input type="text" placeholder="Cidade" oninput="updateCounters()"></td>
-      <td><select class="win-sel" onchange="onWinChange(this)">${winSel}</select></td>
+      <td><select class="win-sel" onchange="onWinChange(this)">${winSel}</select><br><button type="button" class="btn-ver-versao" onclick="verVersaoWindows()">🔍 Ver minha versão</button></td>
       <td><input type="tel" placeholder="(XX) 99999-9999" oninput="maskPhone(this); updateCounters()"></td>
     `;
     return tr;
