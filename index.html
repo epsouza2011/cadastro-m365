@@ -438,6 +438,9 @@
   }
   .footer a { color: #2A5C30; text-decoration: none; }
 
+  .example-badge { display:inline-block; background:#C8A951; color:#7D5A00; font-size:10px; font-weight:600; padding:1px 7px; border-radius:8px; margin-left:6px; vertical-align:middle; letter-spacing:0.04em; }
+  .example-row td { border-left: 3px solid #C8A951 !important; background: #FDFAEE !important; }
+
   @media (max-width: 580px) {
     .win-grid { grid-template-columns: 1fr; }
     .header h1 { font-size: 13px; }
@@ -465,7 +468,7 @@
     <div class="intro-icon">📋</div>
     <div>
       <h2>Olá, Carlos! Bem-vindo ao formulário de cadastro</h2>
-      <p>Preencha os dados de cada funcionário para criação das contas corporativas no Microsoft 365. Todos os campos marcados com <strong>*</strong> são obrigatórios. Após preencher, clique em <strong>Enviar para o consultor</strong> — os dados serão salvos automaticamente na planilha.</p>
+      <p>Preencha os dados de cada funcionário abaixo. Todos os campos com <strong>*</strong> são obrigatórios.<br><br>⚠️ <strong>Dúvida no campo "E-mail corporativo"?</strong> Não é o e-mail pessoal do funcionário. Escreva apenas o <strong>nome que deseja</strong> para o e-mail. Exemplo: se o funcionário se chama <em>João Silva</em>, escreva <strong>joao.silva</strong> — o consultor criará o endereço completo como <strong>joao.silva@suaempresa.com.br</strong></p>
     </div>
   </div>
 
@@ -520,7 +523,7 @@
           <thead>
             <tr>
               <th style="width:18%">Nome completo <span class="req">*</span></th>
-              <th style="width:18%">E-mail corporativo <span class="req">*</span></th>
+              <th style="width:20%">E-mail desejado <span class="req">*</span><br><span style="font-weight:400;font-size:10px;opacity:0.8">ex: joao.silva</span></th>
               <th style="width:14%">Cargo / Setor <span class="req">*</span></th>
               <th style="width:13%">Cidade <span class="req">*</span></th>
               <th style="width:17%">Windows atual <span class="req">*</span></th>
@@ -586,9 +589,50 @@
 
   let SCRIPT_URL = localStorage.getItem('sheets_script_url') || '';
 
+  function addExampleRow() {
+    const tbody = document.getElementById('tbody');
+    const tr = makeRow(0);
+    const inputs = tr.querySelectorAll('input');
+    const selects = tr.querySelectorAll('select');
+    inputs[0].value = 'Ex: Maria Silva';
+    inputs[0].style.color = '#aaa';
+    inputs[0].style.fontStyle = 'italic';
+    inputs[1].value = 'maria.silva';
+    inputs[1].style.color = '#aaa';
+    inputs[1].style.fontStyle = 'italic';
+    inputs[2].value = 'Campinas';
+    inputs[2].style.color = '#aaa';
+    inputs[2].style.fontStyle = 'italic';
+    inputs[3].value = '(19) 99999-9999';
+    inputs[3].style.color = '#aaa';
+    inputs[3].style.fontStyle = 'italic';
+    selects[0].value = 'Vendas';
+    selects[1].value = '10pro';
+    const label = document.createElement('div');
+    tr.cells[0].style.position = 'relative';
+    tr.classList.add('example-row');
+    const firstCell = tr.cells[0];
+    const badge = document.createElement('span');
+    badge.className = 'example-badge';
+    badge.textContent = 'EXEMPLO';
+    firstCell.appendChild(badge);
+    tbody.appendChild(tr);
+    const allInputs = tr.querySelectorAll('input, select');
+    allInputs.forEach(inp => {
+      inp.addEventListener('focus', function() {
+        if (this.style.color === 'rgb(170, 170, 170)') {
+          this.value = '';
+          this.style.color = '';
+          this.style.fontStyle = '';
+        }
+      });
+    });
+  }
+
   function init() {
     if (!SCRIPT_URL) openModal();
-    for (let i = 0; i < 3; i++) addRow();
+    addExampleRow();
+    for (let i = 0; i < 2; i++) addRow();
     updateCounters();
   }
 
@@ -619,7 +663,7 @@
 
     tr.innerHTML = `
       <td><input type="text" placeholder="Nome completo" oninput="updateCounters()"></td>
-      <td><input type="text" placeholder="nome@empresa.com.br" oninput="updateCounters()"></td>
+      <td><input type="text" placeholder="ex: joao.silva (só o nome)" oninput="updateCounters()"></td>
       <td><select onchange="updateCounters()">${setorSel}</select></td>
       <td><input type="text" placeholder="Cidade" oninput="updateCounters()"></td>
       <td><select class="win-sel" onchange="onWinChange(this)">${winSel}</select></td>
