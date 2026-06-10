@@ -584,10 +584,10 @@
     { value: 'win78',   label: 'Windows 7 ou 8',  ok: false },
   ];
 
-  let SCRIPT_URL = localStorage.getItem('sheets_script_url') || '';
+  let SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwDCWyOlNi7n72Z2iZDq0V_erHMGW3nJEoB8o-9Ca8tWBc9VrTktoPhmHk9Ya9A1rMu/exec';
 
   function init() {
-    if (!SCRIPT_URL) openModal();
+    
     for (let i = 0; i < 3; i++) addRow();
     updateCounters();
   }
