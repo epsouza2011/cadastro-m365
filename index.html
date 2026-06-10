@@ -438,9 +438,6 @@
   }
   .footer a { color: #2A5C30; text-decoration: none; }
 
-  .example-badge { display:inline-block; background:#C8A951; color:#7D5A00; font-size:10px; font-weight:600; padding:1px 7px; border-radius:8px; margin-left:6px; vertical-align:middle; letter-spacing:0.04em; }
-  .example-row td { border-left: 3px solid #C8A951 !important; background: #FDFAEE !important; }
-
   @media (max-width: 580px) {
     .win-grid { grid-template-columns: 1fr; }
     .header h1 { font-size: 13px; }
@@ -589,50 +586,9 @@
 
   let SCRIPT_URL = localStorage.getItem('sheets_script_url') || '';
 
-  function addExampleRow() {
-    const tbody = document.getElementById('tbody');
-    const tr = makeRow(0);
-    const inputs = tr.querySelectorAll('input');
-    const selects = tr.querySelectorAll('select');
-    inputs[0].value = 'Ex: Maria Silva';
-    inputs[0].style.color = '#aaa';
-    inputs[0].style.fontStyle = 'italic';
-    inputs[1].value = 'maria.silva';
-    inputs[1].style.color = '#aaa';
-    inputs[1].style.fontStyle = 'italic';
-    inputs[2].value = 'Campinas';
-    inputs[2].style.color = '#aaa';
-    inputs[2].style.fontStyle = 'italic';
-    inputs[3].value = '(19) 99999-9999';
-    inputs[3].style.color = '#aaa';
-    inputs[3].style.fontStyle = 'italic';
-    selects[0].value = 'Vendas';
-    selects[1].value = '10pro';
-    const label = document.createElement('div');
-    tr.cells[0].style.position = 'relative';
-    tr.classList.add('example-row');
-    const firstCell = tr.cells[0];
-    const badge = document.createElement('span');
-    badge.className = 'example-badge';
-    badge.textContent = 'EXEMPLO';
-    firstCell.appendChild(badge);
-    tbody.appendChild(tr);
-    const allInputs = tr.querySelectorAll('input, select');
-    allInputs.forEach(inp => {
-      inp.addEventListener('focus', function() {
-        if (this.style.color === 'rgb(170, 170, 170)') {
-          this.value = '';
-          this.style.color = '';
-          this.style.fontStyle = '';
-        }
-      });
-    });
-  }
-
   function init() {
     if (!SCRIPT_URL) openModal();
-    addExampleRow();
-    for (let i = 0; i < 2; i++) addRow();
+    for (let i = 0; i < 3; i++) addRow();
     updateCounters();
   }
 
@@ -662,14 +618,31 @@
     ).join('');
 
     tr.innerHTML = `
-      <td><input type="text" placeholder="Nome completo" oninput="updateCounters()"></td>
-      <td><input type="text" placeholder="ex: joao.silva (só o nome)" oninput="updateCounters()"></td>
+      <td><input type="text" placeholder="Nome completo" class="input-nome" oninput="autoEmail(this); updateCounters()"></td>
+      <td><input type="text" placeholder="ex: joao.silva" class="input-email" oninput="updateCounters(); this.dataset.edited='true'"></td>
       <td><select onchange="updateCounters()">${setorSel}</select></td>
       <td><input type="text" placeholder="Cidade" oninput="updateCounters()"></td>
       <td><select class="win-sel" onchange="onWinChange(this)">${winSel}</select></td>
       <td><input type="tel" placeholder="(XX) 99999-9999" oninput="maskPhone(this); updateCounters()"></td>
     `;
     return tr;
+  }
+
+  function removeAcentos(str) {
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  }
+
+  function autoEmail(inputNome) {
+    const tr = inputNome.closest('tr');
+    const inputEmail = tr.querySelector('.input-email');
+    if (inputEmail.dataset.edited === 'true') return;
+    const partes = inputNome.value.trim().split(/\s+/).filter(Boolean);
+    if (partes.length < 2) { inputEmail.value = ''; inputEmail.style.color=''; inputEmail.style.fontWeight=''; return; }
+    const primeiro = removeAcentos(partes[0]);
+    const ultimo = removeAcentos(partes[partes.length - 1]);
+    inputEmail.value = primeiro + '.' + ultimo;
+    inputEmail.style.color = '#2A5C30';
+    inputEmail.style.fontWeight = '500';
   }
 
   function addRow() {
